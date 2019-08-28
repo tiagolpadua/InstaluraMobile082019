@@ -1,13 +1,5 @@
 import React, {Component} from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-
+import {Dimensions, FlatList, Platform, StyleSheet} from 'react-native';
 import Post from './Post';
 
 const width = Dimensions.get('screen').width;
@@ -38,7 +30,7 @@ export default class Feed extends Component {
 }
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
+    marginTop: Platform.OS == 'ios' ? 20 : 0,
   },
   cabecalho: {
     margin: 10,
