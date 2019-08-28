@@ -6,8 +6,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-  TextInput,
 } from 'react-native';
+import InputComentario from './InputComentario';
 
 const width = Dimensions.get('screen').width;
 
@@ -16,7 +16,6 @@ export default class Post extends Component {
     super(props);
     this.state = {
       foto: this.props.foto,
-      valorComentario: '',
     };
   }
 
@@ -69,25 +68,22 @@ export default class Post extends Component {
     }
   }
 
-  adicionaComentario = () => {
-    if (this.state.valorComentario === '') {
-      return;
-    }
-
+  adicionaComentario = (valorComentario, inputComentario) => {
+    if (valorComentario === '') return;
     const novaLista = [
       ...this.state.foto.comentarios,
       {
-        id: this.state.valorComentario,
+        id: valorComentario,
         login: 'meuUsuario',
-        texto: this.state.valorComentario,
+        texto: valorComentario,
       },
     ];
     const fotoAtualizada = {
       ...this.state.foto,
       comentarios: novaLista,
     };
-    this.setState({foto: fotoAtualizada, valorComentario: ''});
-    this.inputComentario.clear();
+    this.setState({foto: fotoAtualizada});
+    inputComentario.clear();
   };
 
   render() {
@@ -116,21 +112,7 @@ export default class Post extends Component {
             </View>
           ))}
 
-          <View style={styles.novoComentario}>
-            <TextInput
-              style={styles.input}
-              underlineColorAndroid="transparent"
-              placeholder="Adicione um comentário..."
-              ref={input => (this.inputComentario = input)}
-              onChangeText={texto => this.setState({valorComentario: texto})}
-            />
-            <TouchableOpacity onPress={this.adicionaComentario}>
-              <Image
-                style={styles.icone}
-                source={require('../../resources/img/send.png')}
-              />
-            </TouchableOpacity>
-          </View>
+          <InputComentario comentarioCallback={this.adicionaComentario} />
         </View>
       </View>
     );
@@ -163,6 +145,13 @@ const styles = StyleSheet.create({
   },
   likes: {
     fontWeight: 'bold',
+  },
+  comentario: {
+    flexDirection: 'row',
+  },
+  tituloComentario: {
+    fontWeight: 'bold',
+    marginRight: 5,
   },
   novoComentario: {
     flexDirection: 'row',
