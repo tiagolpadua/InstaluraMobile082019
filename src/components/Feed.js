@@ -41,7 +41,7 @@ export default class Feed extends Component {
     if (valorComentario === '') {
       return;
     }
-    const foto = this.state.fotos.find(f => f.id === idFoto);
+    const foto = this.buscaPorId(idFoto);
     const novaLista = [
       ...foto.comentarios,
       {
@@ -54,15 +54,13 @@ export default class Feed extends Component {
       ...foto,
       comentarios: novaLista,
     };
-    const fotos = this.state.fotos.map(f =>
-      f.id === fotoAtualizada.id ? fotoAtualizada : f,
-    );
+    const fotos = this.atualizaFotos(fotoAtualizada);
     this.setState({fotos});
     inputComentario.clear();
   };
 
   like = idFoto => {
-    const foto = this.state.fotos.find(f => f.id === idFoto);
+    const foto = this.buscaPorId(idFoto);
     let novaLista = [];
     if (!foto.likeada) {
       novaLista = [...foto.likers, {login: 'meuUsuario'}];
@@ -76,11 +74,19 @@ export default class Feed extends Component {
       likeada: !foto.likeada,
       likers: novaLista,
     };
-    const fotos = this.state.fotos.map(f =>
-      f.id === fotoAtualizada.id ? fotoAtualizada : f,
-    );
+    const fotos = this.atualizaFotos(fotoAtualizada);
     this.setState({fotos});
   };
+
+  buscaPorId(idFoto) {
+    return this.state.fotos.find(foto => foto.id === idFoto);
+  }
+
+  atualizaFotos(fotoAtualizada) {
+    return this.state.fotos.map(foto =>
+      foto.id === fotoAtualizada.id ? fotoAtualizada : foto,
+    );
+  }
 
   render() {
     return (
@@ -102,7 +108,7 @@ export default class Feed extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: Platform.OS == 'ios' ? 20 : 0,
+    marginTop: Platform.OS === 'ios' ? 20 : 0,
   },
   cabecalho: {
     margin: 10,
