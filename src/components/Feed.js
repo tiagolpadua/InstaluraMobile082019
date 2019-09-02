@@ -10,11 +10,57 @@ export default class Feed extends Component {
       fotos: [],
     };
   }
+
   componentDidMount() {
     fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
       .then(resposta => resposta.json())
       .then(json => this.setState({fotos: json}));
   }
+
+  adicionaComentario = (valorComentario, inputComentario) => {
+    if (valorComentario === '') {
+      return;
+    }
+    const novaLista = [
+      ...this.state.foto.comentarios,
+      {
+        id: valorComentario,
+        login: 'meuUsuario',
+        texto: valorComentario,
+      },
+    ];
+    const fotoAtualizada = {
+      ...this.state.foto,
+      comentarios: novaLista,
+    };
+    this.setState({foto: fotoAtualizada});
+    inputComentario.clear();
+  };
+
+  adicionaComentario = (idFoto, valorComentario, inputComentario) => {
+    if (valorComentario === '') {
+      return;
+    }
+    const foto = this.state.fotos.find(f => f.id === idFoto);
+    const novaLista = [
+      ...foto.comentarios,
+      {
+        id: valorComentario,
+        login: 'meuUsuario',
+        texto: valorComentario,
+      },
+    ];
+    const fotoAtualizada = {
+      ...foto,
+      comentarios: novaLista,
+    };
+    const fotos = this.state.fotos.map(f =>
+      f.id === fotoAtualizada.id ? fotoAtualizada : f,
+    );
+    this.setState({fotos});
+    inputComentario.clear();
+  };
+
   like = idFoto => {
     const foto = this.state.fotos.find(f => f.id === idFoto);
     let novaLista = [];
@@ -42,7 +88,13 @@ export default class Feed extends Component {
         style={styles.container}
         keyExtractor={item => item.id + ''}
         data={this.state.fotos}
-        renderItem={({item}) => <Post foto={item} likeCallback={this.like} />}
+        renderItem={({item}) => (
+          <Post
+            foto={item}
+            likeCallback={this.like}
+            comentarioCallback={this.adicionaComentario}
+          />
+        )}
       />
     );
   }
