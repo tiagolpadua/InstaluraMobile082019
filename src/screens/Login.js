@@ -45,6 +45,12 @@ export default class Login extends Component {
       .catch(error => this.setState({mensagem: error.message}));
   };
 
+  logout() {
+    AsyncStorage.removeItem('usuario');
+    AsyncStorage.removeItem('token');
+    // ir para a tela de logout
+  }
+
   render() {
     return (
       <View style={styles.container}>
