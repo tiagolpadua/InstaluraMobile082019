@@ -6,6 +6,7 @@ import {
   Text,
   TextInput,
   View,
+  AsyncStorage,
 } from 'react-native';
 const width = Dimensions.get('screen').width;
 export default class Login extends Component {
@@ -14,6 +15,7 @@ export default class Login extends Component {
     this.state = {
       usuario: '',
       senha: '',
+      mensagem: '',
     };
   }
 
@@ -36,7 +38,11 @@ export default class Login extends Component {
         }
         throw new Error('Não foi possível efetuar login');
       })
-      .then(token => console.warn(token));
+      .then(token => {
+        AsyncStorage.setItem('token', token);
+        AsyncStorage.setItem('usuario', this.state.usuario);
+      })
+      .catch(error => this.setState({mensagem: error.message}));
   };
 
   render() {
@@ -46,12 +52,14 @@ export default class Login extends Component {
         <View style={styles.form}>
           <TextInput
             style={styles.input}
+            defaultValue={this.state.usuario}
             autoCapitalize="none"
             placeholder="Usuário..."
             onChangeText={texto => this.setState({usuario: texto})}
           />
           <TextInput
             style={styles.input}
+            defaultValue={this.state.senha}
             autoCapitalize="none"
             secureTextEntry={true}
             placeholder="Senha..."
@@ -59,6 +67,7 @@ export default class Login extends Component {
           />
           <Button title="Login" onPress={this.efetuaLogin} />
         </View>
+        <Text style={styles.mensagem}>{this.state.mensagem}</Text>
       </View>
     );
   }
@@ -80,5 +89,9 @@ const styles = StyleSheet.create({
   titulo: {
     fontWeight: 'bold',
     fontSize: 26,
+  },
+  mensagem: {
+    marginTop: 15,
+    color: '#e74c3c',
   },
 });
