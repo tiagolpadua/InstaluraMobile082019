@@ -25,7 +25,7 @@ export default class Likes extends Component {
 
     return (
       <View>
-        <TouchableOpacity onPress={likeCallback}>
+        <TouchableOpacity onPress={() => likeCallback(foto.id)}>
           <Image
             style={styles.botaoDeLike}
             source={this.carregaIcone(foto.likeada)}
