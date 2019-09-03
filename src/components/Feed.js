@@ -1,9 +1,8 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, {Component} from 'react';
-import {Button, Dimensions, FlatList, StyleSheet} from 'react-native';
+import {Button, FlatList} from 'react-native';
 import Post from './Post';
 
-const width = Dimensions.get('screen').width;
 export default class Feed extends Component {
   constructor() {
     super();
@@ -119,21 +118,3 @@ export default class Feed extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  cabecalho: {
-    margin: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  fotoDePerfil: {
-    marginRight: 10,
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-  },
-  foto: {
-    width: width,
-    height: width,
-  },
-});

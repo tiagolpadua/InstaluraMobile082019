@@ -5,6 +5,7 @@ import {name as appName} from './app.json';
 import Feed from './src/components/Feed';
 import Login from './src/screens/Login';
 import Splash from './src/screens/Splash.js';
+import AluraLingua from './src/components/AluraLingua.js';
 
 YellowBox.ignoreWarnings(['Require cycle:']);
 
@@ -18,6 +19,9 @@ const AppNavigator = createStackNavigator(
     },
     Splash: {
       screen: Splash,
+    },
+    AluraLingua: {
+      screen: AluraLingua,
     },
   },
   {
