@@ -12,7 +12,17 @@ export default class Feed extends Component {
   }
 
   componentDidMount() {
-    fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
+    const uri = 'https://instalura-api.herokuapp.com/api/fotos';
+
+    AsyncStorage.getItem('token')
+      .then(token => {
+        return {
+          headers: new Headers({
+            'X-AUTH-TOKEN': token,
+          }),
+        };
+      })
+      .then(requestInfo => fetch(uri, requestInfo))
       .then(resposta => resposta.json())
       .then(json => this.setState({fotos: json}));
   }
@@ -31,65 +41,72 @@ export default class Feed extends Component {
     ),
   });
 
-  adicionaComentario = (valorComentario, inputComentario) => {
-    if (valorComentario === '') {
-      return;
-    }
-    const novaLista = [
-      ...this.state.foto.comentarios,
-      {
-        id: valorComentario,
-        login: 'meuUsuario',
-        texto: valorComentario,
-      },
-    ];
-    const fotoAtualizada = {
-      ...this.state.foto,
-      comentarios: novaLista,
-    };
-    this.setState({foto: fotoAtualizada});
-    inputComentario.clear();
-  };
-
   adicionaComentario = (idFoto, valorComentario, inputComentario) => {
     if (valorComentario === '') {
       return;
     }
     const foto = this.buscaPorId(idFoto);
-    const novaLista = [
-      ...foto.comentarios,
-      {
-        id: valorComentario,
-        login: 'meuUsuario',
-        texto: valorComentario,
-      },
-    ];
-    const fotoAtualizada = {
-      ...foto,
-      comentarios: novaLista,
-    };
-    const fotos = this.atualizaFotos(fotoAtualizada);
-    this.setState({fotos});
-    inputComentario.clear();
+    const uri = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/comment`;
+    AsyncStorage.getItem('token')
+      .then(token => {
+        return {
+          method: 'POST',
+          body: JSON.stringify({
+            texto: valorComentario,
+          }),
+          headers: new Headers({
+            'Content-type': 'application/json',
+            'X-AUTH-TOKEN': token,
+          }),
+        };
+      })
+      .then(requestInfo => fetch(uri, requestInfo))
+      .then(resposta => resposta.json())
+      .then(comentario => [...foto.comentarios, comentario])
+      .then(novaLista => {
+        const fotoAtualizada = {
+          ...foto,
+          comentarios: novaLista,
+        };
+        this.atualizaFotos(fotoAtualizada);
+        inputComentario.clear();
+      });
   };
 
   like = idFoto => {
     const foto = this.buscaPorId(idFoto);
-    let novaLista = [];
-    if (!foto.likeada) {
-      novaLista = [...foto.likers, {login: 'meuUsuario'}];
-    } else {
-      novaLista = foto.likers.filter(liker => {
-        return liker.login !== 'meuUsuario';
+    AsyncStorage.getItem('usuario')
+      .then(usuarioLogado => {
+        let novaLista = [];
+        if (!foto.likeada) {
+          novaLista = [...foto.likers, {login: usuarioLogado}];
+        } else {
+          novaLista = foto.likers.filter(liker => {
+            return liker.login !== usuarioLogado;
+          });
+        }
+        return novaLista;
+      })
+      .then(novaLista => {
+        const fotoAtualizada = {
+          ...foto,
+          likeada: !foto.likeada,
+          likers: novaLista,
+        };
+        this.atualizaFotos(fotoAtualizada);
+
+        const uri = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/like`;
+        AsyncStorage.getItem('token')
+          .then(token => {
+            return {
+              method: 'POST',
+              headers: new Headers({
+                'X-AUTH-TOKEN': token,
+              }),
+            };
+          })
+          .then(requestInfo => fetch(uri, requestInfo));
       });
-    }
-    const fotoAtualizada = {
-      ...foto,
-      likeada: !foto.likeada,
-      likers: novaLista,
-    };
-    const fotos = this.atualizaFotos(fotoAtualizada);
-    this.setState({fotos});
   };
 
   buscaPorId(idFoto) {
@@ -97,9 +114,10 @@ export default class Feed extends Component {
   }
 
   atualizaFotos(fotoAtualizada) {
-    return this.state.fotos.map(foto =>
+    const fotos = this.state.fotos.map(foto =>
       foto.id === fotoAtualizada.id ? fotoAtualizada : foto,
     );
+    this.setState({fotos});
   }
 
   render() {
