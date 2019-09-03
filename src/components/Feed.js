@@ -1,5 +1,11 @@
 import React, {Component} from 'react';
-import {Dimensions, FlatList, Platform, StyleSheet} from 'react-native';
+import {
+  Button,
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  AsyncStorage,
+} from 'react-native';
 import Post from './Post';
 
 const width = Dimensions.get('screen').width;
@@ -17,9 +23,19 @@ export default class Feed extends Component {
       .then(json => this.setState({fotos: json}));
   }
 
-  static navigationOptions = {
+  static navigationOptions = ({navigation}) => ({
     title: 'Instalura',
-  };
+    headerRight: (
+      <Button
+        title="Logout"
+        onPress={() => {
+          AsyncStorage.removeItem('usuario');
+          AsyncStorage.removeItem('token');
+          navigation.navigate('Login');
+        }}
+      />
+    ),
+  });
 
   adicionaComentario = (valorComentario, inputComentario) => {
     if (valorComentario === '') {
@@ -95,7 +111,6 @@ export default class Feed extends Component {
   render() {
     return (
       <FlatList
-        style={styles.container}
         keyExtractor={item => item.id + ''}
         data={this.state.fotos}
         renderItem={({item}) => (
@@ -111,9 +126,6 @@ export default class Feed extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: Platform.OS === 'ios' ? 20 : 0,
-  },
   cabecalho: {
     margin: 10,
     flexDirection: 'row',

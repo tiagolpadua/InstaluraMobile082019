@@ -8,6 +8,7 @@ import {
   View,
   AsyncStorage,
 } from 'react-native';
+import {StackActions, NavigationActions} from 'react-navigation';
 const width = Dimensions.get('screen').width;
 export default class Login extends Component {
   constructor() {
@@ -46,7 +47,13 @@ export default class Login extends Component {
       .then(token => {
         AsyncStorage.setItem('token', token);
         AsyncStorage.setItem('usuario', this.state.usuario);
-        navigation.navigate('Feed');
+
+        // https://reactnavigation.org/docs/en/stack-actions.html#reset
+        const resetAction = StackActions.reset({
+          index: 0,
+          actions: [NavigationActions.navigate({routeName: 'Feed'})],
+        });
+        navigation.dispatch(resetAction);
       })
       .catch(error => this.setState({mensagem: error.message}));
   };
