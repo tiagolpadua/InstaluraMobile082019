@@ -36,24 +36,15 @@ export default class Feed extends Component {
     if (valorComentario === '') {
       return;
     }
+
     const foto = this.buscaPorId(idFoto);
-    const uri = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/comment`;
-    AsyncStorage.getItem('token')
-      .then(token => {
-        return {
-          method: 'POST',
-          body: JSON.stringify({
-            texto: valorComentario,
-          }),
-          headers: new Headers({
-            'Content-type': 'application/json',
-            'X-AUTH-TOKEN': token,
-          }),
-        };
-      })
-      .then(requestInfo => fetch(uri, requestInfo))
-      .then(resposta => resposta.json())
-      .then(comentario => [...foto.comentarios, comentario])
+
+    const comentario = {
+      texto: valorComentario,
+    };
+
+    InstaluraFetchService.post(`/fotos/${idFoto}/comment`, comentario)
+      .then(c => [...foto.comentarios, c])
       .then(novaLista => {
         const fotoAtualizada = {
           ...foto,
@@ -86,17 +77,7 @@ export default class Feed extends Component {
         };
         this.atualizaFotos(fotoAtualizada);
 
-        const uri = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/like`;
-        AsyncStorage.getItem('token')
-          .then(token => {
-            return {
-              method: 'POST',
-              headers: new Headers({
-                'X-AUTH-TOKEN': token,
-              }),
-            };
-          })
-          .then(requestInfo => fetch(uri, requestInfo));
+        InstaluraFetchService.post(`/fotos/${idFoto}/like`);
       });
   };
 
