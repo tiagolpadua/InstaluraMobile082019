@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {Button, FlatList} from 'react-native';
 import Post from './Post';
 import InstaluraFetchService from '../services/InstaluraFetchService';
+import Notificacao from './api/Notificacao';
 
 export default class Feed extends Component {
   constructor() {
@@ -37,6 +38,8 @@ export default class Feed extends Component {
       return;
     }
 
+    const listaOriginal = this.state.fotos;
+
     const foto = this.buscaPorId(idFoto);
 
     const comentario = {
@@ -52,10 +55,15 @@ export default class Feed extends Component {
         };
         this.atualizaFotos(fotoAtualizada);
         inputComentario.clear();
+      })
+      .catch(e => {
+        this.setState({fotos: listaOriginal});
+        Notificacao.exibe('Ops..', 'Algo deu errado ao comentar...');
       });
   };
 
   like = idFoto => {
+    const listaOriginal = this.state.fotos;
     const foto = this.buscaPorId(idFoto);
     AsyncStorage.getItem('usuario')
       .then(usuarioLogado => {
@@ -77,7 +85,10 @@ export default class Feed extends Component {
         };
         this.atualizaFotos(fotoAtualizada);
 
-        InstaluraFetchService.post(`/fotos/${idFoto}/like`);
+        InstaluraFetchService.post(`/fotos/${idFoto}/like`).catch(e => {
+          this.setState({fotos: listaOriginal});
+          Notificacao.exibe('Ops..', 'Algo deu errado ao curtir...');
+        });
       });
   };
 

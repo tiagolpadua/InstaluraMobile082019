@@ -30,6 +30,11 @@ export default class InstaluraFetchService {
         };
       })
       .then(requestInfo => fetch(uri, requestInfo))
-      .then(resposta => resposta.json());
+      .then(resposta => {
+        if (resposta.ok) {
+          return resposta.json();
+        }
+        throw new Error('Não foi possível completar a operação');
+      });
   }
 }
