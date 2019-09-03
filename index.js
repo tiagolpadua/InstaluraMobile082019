@@ -1,10 +1,12 @@
-import {AppRegistry, AsyncStorage} from 'react-native';
-import {name as appName} from './app.json';
+import {AppRegistry, YellowBox} from 'react-native';
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-import Login from './src/screens/Login';
+import {name as appName} from './app.json';
 import Feed from './src/components/Feed';
+import Login from './src/screens/Login';
 import Splash from './src/screens/Splash.js';
+
+YellowBox.ignoreWarnings(['Require cycle:']);
 
 const AppNavigator = createStackNavigator(
   {

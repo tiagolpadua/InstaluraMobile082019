@@ -1,11 +1,6 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React, {Component} from 'react';
-import {
-  Button,
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  AsyncStorage,
-} from 'react-native';
+import {Button, Dimensions, FlatList, StyleSheet} from 'react-native';
 import Post from './Post';
 
 const width = Dimensions.get('screen').width;

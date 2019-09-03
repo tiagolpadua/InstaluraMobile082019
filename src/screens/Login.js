@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React, {Component} from 'react';
 import {
   Button,
@@ -6,9 +7,9 @@ import {
   Text,
   TextInput,
   View,
-  AsyncStorage,
 } from 'react-native';
-import {StackActions, NavigationActions} from 'react-navigation';
+import {NavigationActions, StackActions} from 'react-navigation';
+
 const width = Dimensions.get('screen').width;
 export default class Login extends Component {
   constructor() {

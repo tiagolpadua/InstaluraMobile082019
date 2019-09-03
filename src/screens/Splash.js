@@ -1,6 +1,8 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, AsyncStorage} from 'react-native';
-import {StackActions, NavigationActions} from 'react-navigation';
+import {StyleSheet, Text, View} from 'react-native';
+import {NavigationActions, StackActions} from 'react-navigation';
+
 export default class Splash extends Component {
   static navigationOptions = {
     header: null,
