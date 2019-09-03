@@ -13,13 +13,18 @@ export default class Login extends Component {
   constructor() {
     super();
     this.state = {
-      usuario: '',
-      senha: '',
+      usuario: 'rafael',
+      senha: '123456',
       mensagem: '',
     };
   }
 
+  static navigationOptions = {
+    header: null,
+  };
+
   efetuaLogin = () => {
+    const {navigation} = this.props;
     const uri = 'https://instalura-api.herokuapp.com/api/public/login';
     const requestInfo = {
       method: 'POST',
@@ -41,6 +46,7 @@ export default class Login extends Component {
       .then(token => {
         AsyncStorage.setItem('token', token);
         AsyncStorage.setItem('usuario', this.state.usuario);
+        navigation.navigate('Feed');
       })
       .catch(error => this.setState({mensagem: error.message}));
   };

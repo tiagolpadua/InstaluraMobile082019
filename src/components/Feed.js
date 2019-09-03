@@ -17,6 +17,10 @@ export default class Feed extends Component {
       .then(json => this.setState({fotos: json}));
   }
 
+  static navigationOptions = {
+    title: 'Instalura',
+  };
+
   adicionaComentario = (valorComentario, inputComentario) => {
     if (valorComentario === '') {
       return;
