@@ -1,27 +1,12 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
 export default class InstaluraFetchService {
-  static get(recurso) {
-    const uri = 'https://instalura-api.herokuapp.com/api' + recurso;
-    const jsonPromisse = AsyncStorage.getItem('token')
-      .then(token => {
-        return {
-          headers: new Headers({
-            'X-AUTH-TOKEN': token,
-          }),
-        };
-      })
-      .then(requestInfo => fetch(uri, requestInfo))
-      .then(resposta => resposta.json());
-    return jsonPromisse;
-  }
-
-  static post(recurso, dados) {
+  static makeRequest(recurso, method = 'GET', dados) {
     const uri = 'https://instalura-api.herokuapp.com/api' + recurso;
     return AsyncStorage.getItem('token')
       .then(token => {
         return {
-          method: 'POST',
+          method: method,
           body: JSON.stringify(dados),
           headers: new Headers({
             'Content-type': 'application/json',
@@ -36,5 +21,13 @@ export default class InstaluraFetchService {
         }
         throw new Error('Não foi possível completar a operação');
       });
+  }
+
+  static get(recurso) {
+    return InstaluraFetchService.makeRequest(recurso);
+  }
+
+  static post(recurso, dados) {
+    return InstaluraFetchService.makeRequest(recurso, 'POST', dados);
   }
 }
