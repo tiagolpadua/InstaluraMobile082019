@@ -12,22 +12,31 @@ import Notificacao from './api/Notificacao';
 import Post from './Post';
 
 export default class Feed extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       fotos: [],
     };
   }
 
   componentDidMount() {
-    this.carregar();
+    let uri = '/fotos';
+    const {navigation} = this.props;
+    const usuario = navigation.getParam('usuario');
+    if (usuario) {
+      uri = `/public/fotos/${usuario}`;
+    }
+
+    InstaluraFetchService.get(uri).then(json => this.setState({fotos: json}));
   }
 
-  carregar = () => {
-    InstaluraFetchService.get('/fotosc')
-      .then(json => this.setState({fotos: json, status: 'NORMAL'}))
-      .catch(() => this.setState({status: 'FALHA_CARREGAMENTO'}));
-  };
+  carregar() {
+    let uri = '/fotos';
+    if (this.props.usuario) {
+      uri = `/public/fotos/${this.props.usuario}`;
+    }
+    InstaluraFetchService.get(uri).then(json => this.setState({fotos: json}));
+  }
 
   static navigationOptions = ({navigation}) => ({
     title: 'Instalura',
@@ -42,6 +51,12 @@ export default class Feed extends Component {
       />
     ),
   });
+
+  verPerfilUsuario = idFoto => {
+    const {navigation} = this.props;
+    const foto = this.buscaPorId(idFoto);
+    navigation.navigate('PerfilUsuario', {usuario: foto.loginUsuario});
+  };
 
   adicionaComentario = (idFoto, valorComentario, inputComentario) => {
     if (valorComentario === '') {
@@ -132,6 +147,7 @@ export default class Feed extends Component {
               foto={item}
               likeCallback={this.like}
               comentarioCallback={this.adicionaComentario}
+              verPerfilCallback={this.verPerfilUsuario}
             />
           )}
         />

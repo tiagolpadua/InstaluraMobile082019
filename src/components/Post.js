@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import InputComentario from './InputComentario';
 import Likes from './Likes';
 
@@ -24,14 +31,21 @@ export default class Post extends Component {
   }
 
   render() {
-    const {foto, likeCallback, comentarioCallback} = this.props;
+    const {
+      foto,
+      likeCallback,
+      comentarioCallback,
+      verPerfilCallback,
+    } = this.props;
 
     return (
       <View>
-        <View style={styles.cabecalho}>
+        <TouchableOpacity
+          style={styles.cabecalho}
+          onPress={() => verPerfilCallback(foto.id)}>
           <Image source={{uri: foto.urlPerfil}} style={styles.fotoDePerfil} />
           <Text>{foto.loginUsuario}</Text>
-        </View>
+        </TouchableOpacity>
         <Image source={{uri: foto.urlFoto}} style={styles.foto} />
         <View style={styles.rodape}>
           <Likes foto={foto} likeCallback={likeCallback} />

@@ -17,6 +17,9 @@ const AppNavigator = createStackNavigator(
     Feed: {
       screen: Feed,
     },
+    PerfilUsuario: {
+      screen: Feed,
+    },
     Splash: {
       screen: Splash,
     },
