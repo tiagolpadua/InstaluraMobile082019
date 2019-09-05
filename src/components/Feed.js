@@ -1,25 +1,27 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import React, {Component} from 'react';
-import {
-  Button,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import {FlatList, ScrollView} from 'react-native';
+import {NavigationEvents} from 'react-navigation';
+import Notificacao from '../api/Notificacao';
 import InstaluraFetchService from '../services/InstaluraFetchService';
-import Notificacao from './api/Notificacao';
+import HeaderUsuario from './HeaderUsuario';
 import Post from './Post';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Feed extends Component {
-  constructor(props) {
-    super(props);
+  static navigationOptions = ({navigation}) => {
+    return {
+      title: navigation.getParam('usuario', 'Instalura'),
+    };
+  };
+
+  constructor() {
+    super();
     this.state = {
       fotos: [],
     };
   }
 
-  componentDidMount() {
+  update = () => {
     let uri = '/fotos';
     const {navigation} = this.props;
     const usuario = navigation.getParam('usuario');
@@ -28,34 +30,6 @@ export default class Feed extends Component {
     }
 
     InstaluraFetchService.get(uri).then(json => this.setState({fotos: json}));
-  }
-
-  carregar() {
-    let uri = '/fotos';
-    if (this.props.usuario) {
-      uri = `/public/fotos/${this.props.usuario}`;
-    }
-    InstaluraFetchService.get(uri).then(json => this.setState({fotos: json}));
-  }
-
-  static navigationOptions = ({navigation}) => ({
-    title: 'Instalura',
-    headerRight: (
-      <Button
-        title="Logout"
-        onPress={() => {
-          AsyncStorage.removeItem('usuario');
-          AsyncStorage.removeItem('token');
-          navigation.navigate('Login');
-        }}
-      />
-    ),
-  });
-
-  verPerfilUsuario = idFoto => {
-    const {navigation} = this.props;
-    const foto = this.buscaPorId(idFoto);
-    navigation.navigate('PerfilUsuario', {usuario: foto.loginUsuario});
   };
 
   adicionaComentario = (idFoto, valorComentario, inputComentario) => {
@@ -63,16 +37,14 @@ export default class Feed extends Component {
       return;
     }
 
-    const listaOriginal = this.state.fotos;
-
     const foto = this.buscaPorId(idFoto);
 
-    const comentario = {
+    const novoComentario = {
       texto: valorComentario,
     };
 
-    InstaluraFetchService.post(`/fotos/${idFoto}/comment`, comentario)
-      .then(c => [...foto.comentarios, c])
+    InstaluraFetchService.post(`/fotos/${idFoto}/comment`, novoComentario)
+      .then(comentario => [...foto.comentarios, comentario])
       .then(novaLista => {
         const fotoAtualizada = {
           ...foto,
@@ -80,16 +52,12 @@ export default class Feed extends Component {
         };
         this.atualizaFotos(fotoAtualizada);
         inputComentario.clear();
-      })
-      .catch(() => {
-        this.setState({fotos: listaOriginal});
-        Notificacao.exibe('Ops..', 'Algo deu errado ao comentar...');
       });
   };
 
   like = idFoto => {
-    const listaOriginal = this.state.fotos;
     const foto = this.buscaPorId(idFoto);
+    const {fotos: listaOriginal} = this.state;
     AsyncStorage.getItem('usuario')
       .then(usuarioLogado => {
         let novaLista = [];
@@ -110,38 +78,60 @@ export default class Feed extends Component {
         };
         this.atualizaFotos(fotoAtualizada);
 
-        InstaluraFetchService.post(`/fotos/${idFoto}/like`).catch(e => {
+        InstaluraFetchService.post(`/fotos/${idFoto}/like`).catch(() => {
           this.setState({fotos: listaOriginal});
-          Notificacao.exibe('Ops..', 'Algo deu errado ao curtir...');
+          Notificacao.exibe('Ops..', 'Algo deu errado!');
         });
       });
   };
 
-  buscaPorId(idFoto) {
-    return this.state.fotos.find(foto => foto.id === idFoto);
+  verPerfilUsuario = idFoto => {
+    const {navigation} = this.props;
+    const foto = this.buscaPorId(idFoto);
+    navigation.navigate('PerfilUsuario', {
+      usuario: foto.loginUsuario,
+      fotoDePerfil: foto.urlPerfil,
+    });
+  };
+
+  atualizaFotos = fotoAtualizada => {
+    const {fotos} = this.state;
+    const fotosAtualizadas = fotos.map(f =>
+      f.id === fotoAtualizada.id ? fotoAtualizada : f,
+    );
+    this.setState({fotos: fotosAtualizadas});
+  };
+
+  exibeHeader() {
+    const {navigation} = this.props;
+    const {fotos} = this.state;
+    const usuario = navigation.getParam('usuario');
+    const fotoDePerfil = navigation.getParam('fotoDePerfil');
+    return (
+      usuario && (
+        <HeaderUsuario
+          usuario={usuario}
+          fotoDePerfil={fotoDePerfil}
+          posts={fotos.length}
+        />
+      )
+    );
   }
 
-  atualizaFotos(fotoAtualizada) {
-    const fotos = this.state.fotos.map(foto =>
-      foto.id === fotoAtualizada.id ? fotoAtualizada : foto,
-    );
-    this.setState({fotos});
+  buscaPorId(idFoto) {
+    const {fotos} = this.state;
+    return fotos.find(f => f.id === idFoto);
   }
 
   render() {
-    if (this.state.status === 'FALHA_CARREGAMENTO') {
-      return (
-        <TouchableOpacity onPress={this.carregar}>
-          <Text style={styles.mensagem}>
-            Não foi possível carregar o feed. Toque para tentar novamente
-          </Text>
-        </TouchableOpacity>
-      );
-    } else {
-      return (
+    const {fotos} = this.state;
+    return (
+      <ScrollView>
+        <NavigationEvents onWillFocus={() => this.update()} />
+        {this.exibeHeader()}
         <FlatList
-          keyExtractor={item => item.id + ''}
-          data={this.state.fotos}
+          keyExtractor={item => `${item.id}`}
+          data={fotos}
           renderItem={({item}) => (
             <Post
               foto={item}
@@ -151,15 +141,7 @@ export default class Feed extends Component {
             />
           )}
         />
-      );
-    }
+      </ScrollView>
+    );
   }
 }
-
-const styles = StyleSheet.create({
-  mensagem: {
-    fontSize: 20,
-    margin: 10,
-    fontWeight: 'bold',
-  },
-});
