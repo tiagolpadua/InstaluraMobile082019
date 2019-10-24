@@ -10,6 +10,7 @@ import {
 import InputComentario from './InputComentario';
 import Likes from './Likes';
 import PropTypes from 'prop-types';
+import fotoType from '../types';
 
 const width = Dimensions.get('screen').width;
 
@@ -19,24 +20,7 @@ export default class Post extends Component {
   }
 
   static propTypes = {
-    foto: PropTypes.shape({
-      urlPerfil: PropTypes.string.isRequired,
-      loginUsuario: PropTypes.string.isRequired,
-      urlFoto: PropTypes.string.isRequired,
-      id: PropTypes.number.isRequired,
-      likeada: PropTypes.bool.isRequired,
-      likers: PropTypes.arrayOf(
-        PropTypes.shape({
-          login: PropTypes.string.isRequired,
-        }),
-      ).isRequired,
-      comentarios: PropTypes.arrayOf(
-        PropTypes.shape({
-          login: PropTypes.string.isRequired,
-          texto: PropTypes.string.isRequired,
-        }),
-      ).isRequired,
-    }).isRequired,
+    foto: fotoType.isRequired,
     likeCallback: PropTypes.func.isRequired,
     comentarioCallback: PropTypes.func.isRequired,
     verPerfilCallback: PropTypes.func.isRequired,

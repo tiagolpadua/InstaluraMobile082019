@@ -1,27 +1,11 @@
 import React, {Component} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import PropTypes from 'prop-types';
+import fotoType from '../types';
 
 export default class Likes extends Component {
   static propTypes = {
-    foto: PropTypes.shape({
-      urlPerfil: PropTypes.string.isRequired,
-      loginUsuario: PropTypes.string.isRequired,
-      urlFoto: PropTypes.string.isRequired,
-      id: PropTypes.number.isRequired,
-      likeada: PropTypes.bool.isRequired,
-      likers: PropTypes.arrayOf(
-        PropTypes.shape({
-          login: PropTypes.string.isRequired,
-        }),
-      ).isRequired,
-      comentarios: PropTypes.arrayOf(
-        PropTypes.shape({
-          login: PropTypes.string.isRequired,
-          texto: PropTypes.string.isRequired,
-        }),
-      ).isRequired,
-    }).isRequired,
+    foto: fotoType.isRequired,
     likeCallback: PropTypes.func.isRequired,
   };
 
