@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import InputComentario from './InputComentario';
 import Likes from './Likes';
+import PropTypes from 'prop-types';
 
 const width = Dimensions.get('screen').width;
 
@@ -16,6 +17,13 @@ export default class Post extends Component {
   constructor(props) {
     super(props);
   }
+
+  static propTypes = {
+    foto: PropTypes.object.isRequired,
+    likeCallback: PropTypes.func.isRequired,
+    comentarioCallback: PropTypes.func.isRequired,
+    verPerfilCallback: PropTypes.func.isRequired,
+  };
 
   exibeLegenda(foto) {
     if (foto.comentario === '') {
