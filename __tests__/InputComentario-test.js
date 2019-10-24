@@ -4,5 +4,8 @@ import renderer from 'react-test-renderer';
 import InputComentario from '../src/components/InputComentario';
 
 it('Deve renderizar corretamente', () => {
-  renderer.create(<InputComentario idFoto={1} comentarioCallback={jest.fn} />);
+  const inputComentario = renderer.create(
+    <InputComentario idFoto={1} comentarioCallback={jest.fn} />,
+  );
+  expect(inputComentario).toMatchSnapshot();
 });
