@@ -1,7 +1,14 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Image} from 'react-native';
+import PropTypes from 'prop-types';
 
 export default class HeaderUsuario extends Component {
+  static propTypes = {
+    usuario: PropTypes.string.isRequired,
+    fotoDePerfil: PropTypes.string.isRequired,
+    posts: PropTypes.number.isRequired,
+  };
+
   render() {
     return (
       <View style={styles.container}>

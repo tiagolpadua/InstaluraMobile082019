@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
 export default class InputComentario extends Component {
   constructor() {
@@ -14,6 +15,12 @@ export default class InputComentario extends Component {
       valorComentario: '',
     };
   }
+
+  static propTypes = {
+    idFoto: PropTypes.number.isRequired,
+    comentarioCallback: PropTypes.func.isRequired,
+  };
+
   render() {
     const {comentarioCallback, idFoto} = this.props;
 
