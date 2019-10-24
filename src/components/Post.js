@@ -19,7 +19,24 @@ export default class Post extends Component {
   }
 
   static propTypes = {
-    foto: PropTypes.object.isRequired,
+    foto: PropTypes.shape({
+      urlPerfil: PropTypes.string.isRequired,
+      loginUsuario: PropTypes.string.isRequired,
+      urlFoto: PropTypes.string.isRequired,
+      id: PropTypes.number.isRequired,
+      likeada: PropTypes.bool.isRequired,
+      likers: PropTypes.arrayOf(
+        PropTypes.shape({
+          login: PropTypes.string.isRequired,
+        }),
+      ).isRequired,
+      comentarios: PropTypes.arrayOf(
+        PropTypes.shape({
+          login: PropTypes.string.isRequired,
+          texto: PropTypes.string.isRequired,
+        }),
+      ).isRequired,
+    }).isRequired,
     likeCallback: PropTypes.func.isRequired,
     comentarioCallback: PropTypes.func.isRequired,
     verPerfilCallback: PropTypes.func.isRequired,
